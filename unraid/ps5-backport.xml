@@ -31,7 +31,7 @@
   <Config Name="Zeitzone" Target="TZ" Default="Europe/Berlin" Mode="" Description="" Type="Variable" Display="advanced" Required="false" Mask="false">Europe/Berlin</Config>
   <Config Name="Dark Mode" Target="DARK_MODE" Default="1" Mode="" Description="1 = dunkle Web-Oberflaeche" Type="Variable" Display="advanced" Required="false" Mask="false">1</Config>
   <Config Name="App neu starten" Target="KEEP_APP_RUNNING" Default="1" Mode="" Description="1 = App nach Schliessen/Absturz automatisch neu starten" Type="Variable" Display="advanced" Required="false" Mask="false">1</Config>
-  <Config Name="Fenster-Breite" Target="DISPLAY_WIDTH" Default="1920" Mode="" Description="" Type="Variable" Display="advanced" Required="false" Mask="false">1920</Config>
-  <Config Name="Fenster-Hoehe" Target="DISPLAY_HEIGHT" Default="1080" Mode="" Description="" Type="Variable" Display="advanced" Required="false" Mask="false">1080</Config>
+  <Config Name="Fenster-Breite" Target="DISPLAY_WIDTH" Default="2560" Mode="" Description="" Type="Variable" Display="advanced" Required="false" Mask="false">2560</Config>
+  <Config Name="Fenster-Hoehe" Target="DISPLAY_HEIGHT" Default="1440" Mode="" Description="" Type="Variable" Display="advanced" Required="false" Mask="false">1440</Config>
   <Config Name="Wine-Debug" Target="WINEDEBUG" Default="-all" Mode="" Description="Bei Problemen auf err+all setzen, Ausgabe im Container-Log" Type="Variable" Display="advanced" Required="false" Mask="false">-all</Config>
 </Container>
