@@ -1,7 +1,14 @@
 FROM jlesage/baseimage-gui:debian-13-v4
 
 # Wine (64-bit) + Tools fuer Download und Hash-Pruefung
-RUN add-pkg wine wine64 ca-certificates curl fonts-liberation && wine --version
+RUN add-pkg wine wine64 ca-certificates curl fonts-liberation fonts-wqy-zenhei locales && \
+    sed-patch 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+    locale-gen && \
+    wine --version
+
+# UTF-8-Locale, sonst kann Wine Dateinamen mit Nicht-ASCII-Zeichen nicht anlegen
+ENV LANG=en_US.UTF-8 \
+    LC_ALL=en_US.UTF-8
 
 ENV WINEPREFIX=/config/wine \
     WINEARCH=win64 \
