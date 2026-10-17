@@ -1,7 +1,7 @@
-FROM jlesage/baseimage-gui:debian-12-v4
+FROM jlesage/baseimage-gui:debian-13-v4
 
 # Wine (64-bit) + Tools fuer Download und Hash-Pruefung
-RUN add-pkg wine wine64 ca-certificates curl fonts-liberation
+RUN add-pkg wine wine64 ca-certificates curl fonts-liberation && wine --version
 
 ENV WINEPREFIX=/config/wine \
     WINEARCH=win64 \

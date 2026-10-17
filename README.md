@@ -1,6 +1,6 @@
 # ps5-backport-docker
 
-Unraid-Container fuer [PS5 Backport GUI](https://github.com/kerrdec97/PS5-Backport-GUI) (Deckerr97) unter Wine, bedienbar im Browser ueber noVNC. Basis: [jlesage/baseimage-gui](https://github.com/jlesage/docker-baseimage-gui) `debian-12-v4`.
+Unraid-Container fuer [PS5 Backport GUI](https://github.com/kerrdec97/PS5-Backport-GUI) (Deckerr97) unter Wine, bedienbar im Browser ueber noVNC. Basis: [jlesage/baseimage-gui](https://github.com/jlesage/docker-baseimage-gui) `debian-13-v4`.
 
 ## Lizenz der App
 
@@ -43,4 +43,4 @@ Alle weiteren Variablen (`USER_ID`, `GROUP_ID`, `DARK_MODE`, `KEEP_APP_RUNNING`,
 
 ## Status
 
-Ob die EXE unter Wine (Debian 12, Wine 8.0) vollstaendig laeuft, ist ungetestet. Fehler stehen im Container-Log.
+Ob die EXE unter Wine (Debian 13) vollstaendig laeuft, ist ungetestet. Fehler stehen im Container-Log.
