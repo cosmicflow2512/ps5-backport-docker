@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>ps5-backport</Name>
+  <Repository>ghcr.io/cosmicflow2512/ps5-backport-docker:latest</Repository>
+  <Registry>https://github.com/cosmicflow2512/ps5-backport-docker/pkgs/container/ps5-backport-docker</Registry>
+  <Network>bridge</Network>
+  <MyIP/>
+  <Shell>bash</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/cosmicflow2512/ps5-backport-docker/issues</Support>
+  <Project>https://github.com/kerrdec97/PS5-Backport-GUI</Project>
+  <Overview>PS5 Backport GUI (Deckerr97) unter Wine mit Web-GUI (noVNC). Die EXE ist nicht im Image enthalten: Sie wird beim Start aus dem offiziellen GitHub-Release geladen und gegen SHA256SUMS.txt geprueft. In der App: Spiele unter Z:\data\..., Ausgabe nach Z:\data\ps5-backport\zips und Z:\data\ps5-backport\originals. Lizenz der App: nur private, nicht-kommerzielle Nutzung.</Overview>
+  <Category>Tools: Other:</Category>
+  <WebUI>http://[IP]:[PORT:5800]/</WebUI>
+  <TemplateURL>https://raw.githubusercontent.com/cosmicflow2512/ps5-backport-docker/main/unraid/ps5-backport.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/jlesage/docker-templates/master/jlesage/images/generic-app-icon.png</Icon>
+  <ExtraParams/>
+  <PostArgs/>
+  <CPUset/>
+  <DonateText/>
+  <DonateLink/>
+  <Requires/>
+  <Config Name="Web-GUI Port" Target="5800" Default="5810" Mode="tcp" Description="Web-Oberflaeche (noVNC)" Type="Port" Display="always" Required="true" Mask="false">5810</Config>
+  <Config Name="Appdata" Target="/config" Default="/mnt/cache/appdata/ps5-backport" Mode="rw" Description="Wine-Prefix, EXE, Einstellungen und Logs der App" Type="Path" Display="always" Required="true" Mask="false">/mnt/cache/appdata/ps5-backport</Config>
+  <Config Name="Daten (Spiele + Ausgabe)" Target="/data" Default="/mnt/cache_backup/NZB/" Mode="rw" Description="Dataset-Root auf CacheBackup. Entpackte Spielordner liegen darunter, Ausgabe nach /data/ps5-backport (in der App Z:\data\...). Root mappen, nicht den Unterordner (Mover)." Type="Path" Display="always" Required="true" Mask="false">/mnt/cache_backup/NZB/</Config>
+  <Config Name="Ausgabe-Unterordner" Target="OUTPUT_SUBDIR" Default="ps5-backport" Mode="" Description="Unterordner unter /data fuer zips/ und originals/ (wird beim Start angelegt)" Type="Variable" Display="always" Required="false" Mask="false">ps5-backport</Config>
+  <Config Name="Auto-Update" Target="AUTO_UPDATE" Default="1" Mode="" Description="1 = bei jedem Start SHA256SUMS.txt pruefen und neue EXE laden, 0 = vorhandene Version behalten" Type="Variable" Display="always" Required="false" Mask="false">1</Config>
+  <Config Name="Release-Tag" Target="RELEASE_TAG" Default="early-testing-beta" Mode="" Description="Release-Tag im Repo kerrdec97/PS5-Backport-GUI" Type="Variable" Display="advanced" Required="false" Mask="false">early-testing-beta</Config>
+  <Config Name="PUID" Target="USER_ID" Default="99" Mode="" Description="User-ID" Type="Variable" Display="advanced" Required="true" Mask="false">99</Config>
+  <Config Name="PGID" Target="GROUP_ID" Default="100" Mode="" Description="Group-ID" Type="Variable" Display="advanced" Required="true" Mask="false">100</Config>
+  <Config Name="Zeitzone" Target="TZ" Default="Europe/Berlin" Mode="" Description="" Type="Variable" Display="advanced" Required="false" Mask="false">Europe/Berlin</Config>
+  <Config Name="Dark Mode" Target="DARK_MODE" Default="1" Mode="" Description="1 = dunkle Web-Oberflaeche" Type="Variable" Display="advanced" Required="false" Mask="false">1</Config>
+  <Config Name="App neu starten" Target="KEEP_APP_RUNNING" Default="1" Mode="" Description="1 = App nach Schliessen/Absturz automatisch neu starten" Type="Variable" Display="advanced" Required="false" Mask="false">1</Config>
+  <Config Name="Fenster-Breite" Target="DISPLAY_WIDTH" Default="1920" Mode="" Description="" Type="Variable" Display="advanced" Required="false" Mask="false">1920</Config>
+  <Config Name="Fenster-Hoehe" Target="DISPLAY_HEIGHT" Default="1080" Mode="" Description="" Type="Variable" Display="advanced" Required="false" Mask="false">1080</Config>
+  <Config Name="Wine-Debug" Target="WINEDEBUG" Default="-all" Mode="" Description="Bei Problemen auf err+all setzen, Ausgabe im Container-Log" Type="Variable" Display="advanced" Required="false" Mask="false">-all</Config>
+</Container>
