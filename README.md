@@ -44,3 +44,7 @@ Alle weiteren Variablen (`USER_ID`, `GROUP_ID`, `DARK_MODE`, `KEEP_APP_RUNNING`,
 ## Status
 
 Ob die EXE unter Wine (Debian 13) vollstaendig laeuft, ist ungetestet. Fehler stehen im Container-Log.
+
+## Upstream-Updates
+
+`.github/workflows/check-upstream.yml` prueft stuendlich das neueste Release von kerrdec97/PS5-Backport-GUI (auch Pre-Releases). Aendert sich Tag oder Hash der EXE, wird `upstream.env` aktualisiert und das Image neu gebaut. Unraid zeigt dann ein Update an; nach dem Update laedt der Container beim Start die neue EXE. Die EXE selbst ist nie im Image.

@@ -1,0 +1,71 @@
+name: Check upstream release
+
+# Prueft stuendlich, ob kerrdec97/PS5-Backport-GUI eine neue EXE veroeffentlicht hat
+# (neuer Release-Tag oder ersetzte Datei im selben Tag). Bei Aenderung wird
+# upstream.env aktualisiert und das Image neu gebaut. Die EXE selbst kommt nicht ins Image.
+
+on:
+  schedule:
+    - cron: '23 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+concurrency:
+  group: check-upstream
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.cmp.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: latest
+        name: Get newest upstream release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          TAG=$(gh api 'repos/kerrdec97/PS5-Backport-GUI/releases?per_page=1' --jq '.[0].tag_name')
+          [ -n "$TAG" ] && [ "$TAG" != "null" ] || { echo "Kein Release gefunden"; exit 1; }
+          gh release download "$TAG" --repo kerrdec97/PS5-Backport-GUI --pattern SHA256SUMS.txt --dir "$RUNNER_TEMP" --clobber
+          SHA=$(grep -i 'PS5BackportGUI.exe' "$RUNNER_TEMP/SHA256SUMS.txt" | head -n1 | awk '{print tolower($1)}')
+          echo "$SHA" | grep -Eq '^[0-9a-f]{64}$' || { echo "Kein gueltiger Hash:"; cat "$RUNNER_TEMP/SHA256SUMS.txt"; exit 1; }
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          echo "Upstream: $TAG $SHA"
+
+      - id: cmp
+        name: Compare with upstream.env
+        run: |
+          set -euo pipefail
+          . ./upstream.env
+          if [ "$UPSTREAM_TAG" = "${{ steps.latest.outputs.tag }}" ] && [ "$UPSTREAM_SHA256" = "${{ steps.latest.outputs.sha }}" ]; then
+            echo "Unveraendert"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "Neu: ${{ steps.latest.outputs.tag }} ${{ steps.latest.outputs.sha }} (vorher $UPSTREAM_TAG $UPSTREAM_SHA256)"
+            printf 'UPSTREAM_TAG=%s\nUPSTREAM_SHA256=%s\n' "${{ steps.latest.outputs.tag }}" "${{ steps.latest.outputs.sha }}" > upstream.env
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit upstream.env
+        if: steps.cmp.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add upstream.env
+          git commit -m "Upstream update: ${{ steps.latest.outputs.tag }} (${{ steps.latest.outputs.sha }})"
+          git push
+
+  build:
+    needs: check
+    if: needs.check.outputs.changed == 'true'
+    uses: ./.github/workflows/docker.yml
+    with:
+      ref: main

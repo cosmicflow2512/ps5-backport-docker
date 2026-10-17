@@ -5,7 +5,10 @@
 APPDIR=/config/app
 EXE="$APPDIR/PS5BackportGUI.exe"
 SUMS="$APPDIR/SHA256SUMS.txt"
-BASE="https://github.com/kerrdec97/PS5-Backport-GUI/releases/download/${RELEASE_TAG:-early-testing-beta}"
+# Release-Tag: Variable RELEASE_TAG, sonst der beim Image-Build ermittelte Upstream-Tag
+TAG="${RELEASE_TAG:-$(cat /etc/ps5backport/upstream_tag 2>/dev/null)}"
+TAG="${TAG:-early-testing-beta}"
+BASE="https://github.com/kerrdec97/PS5-Backport-GUI/releases/download/$TAG"
 OUT="/data/${OUTPUT_SUBDIR:-ps5-backport}"
 
 mkdir -p "$APPDIR"
