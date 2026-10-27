@@ -31,10 +31,12 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          TAG=$(gh api 'repos/kerrdec97/PS5-Backport-GUI/releases?per_page=1' --jq '.[0].tag_name')
+          # Neuestes Release nach Veroeffentlichung, egal ob Pre-Release/Alpha/Beta/Testing
+          TAG=$(gh api 'repos/kerrdec97/PS5-Backport-GUI/releases?per_page=30' --jq '[.[] | select(.draft | not)] | sort_by(.published_at) | last | .tag_name')
           [ -n "$TAG" ] && [ "$TAG" != "null" ] || { echo "Kein Release gefunden"; exit 1; }
           gh release download "$TAG" --repo kerrdec97/PS5-Backport-GUI --pattern SHA256SUMS.txt --dir "$RUNNER_TEMP" --clobber
-          SHA=$(grep -i 'PS5BackportGUI.exe' "$RUNNER_TEMP/SHA256SUMS.txt" | head -n1 | awk '{print tolower($1)}')
+          # EXE-Name ist versioniert (z. B. PS5BackportGUI-0.3.4-test2.exe), daher per Muster suchen
+          SHA=$(awk 'tolower($2) ~ /^\*?ps5backportgui.*\.exe$/ {print tolower($1); exit}' "$RUNNER_TEMP/SHA256SUMS.txt")
           echo "$SHA" | grep -Eq '^[0-9a-f]{64}$' || { echo "Kein gueltiger Hash:"; cat "$RUNNER_TEMP/SHA256SUMS.txt"; exit 1; }
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "sha=$SHA" >> "$GITHUB_OUTPUT"

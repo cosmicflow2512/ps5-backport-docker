@@ -35,7 +35,7 @@ In der App (Wine bildet `/` als `Z:` ab):
 | Variable | Standard | Zweck |
 |---|---|---|
 | `AUTO_UPDATE` | `1` | bei jedem Start neue EXE laden, wenn sich der Hash geaendert hat |
-| `RELEASE_TAG` | `early-testing-beta` | Release-Tag im Upstream-Repo |
+| `RELEASE_TAG` | leer (= beim Image-Build ermittelter Upstream-Tag) | Release-Tag im Upstream-Repo fest vorgeben |
 | `OUTPUT_SUBDIR` | `ps5-backport` | Unterordner unter `/data` |
 | `WINEDEBUG` | `-all` | `err+all` fuer Fehlersuche |
 
@@ -47,4 +47,4 @@ Ob die EXE unter Wine (Debian 13) vollstaendig laeuft, ist ungetestet. Fehler st
 
 ## Upstream-Updates
 
-`.github/workflows/check-upstream.yml` prueft stuendlich das neueste Release von kerrdec97/PS5-Backport-GUI (auch Pre-Releases). Aendert sich Tag oder Hash der EXE, wird `upstream.env` aktualisiert und das Image neu gebaut. Unraid zeigt dann ein Update an; nach dem Update laedt der Container beim Start die neue EXE. Die EXE selbst ist nie im Image.
+`.github/workflows/check-upstream.yml` prueft stuendlich das neueste Release von kerrdec97/PS5-Backport-GUI (nach Veroeffentlichungsdatum, egal ob Release, Pre-Release, Alpha, Beta oder Testing-Build). Der EXE-Name darf versioniert sein (`PS5BackportGUI-<version>.exe`); er wird aus `SHA256SUMS.txt` gelesen. Aendert sich Tag oder Hash der EXE, wird `upstream.env` aktualisiert und das Image neu gebaut. Unraid zeigt dann ein Update an; nach dem Update laedt der Container beim Start die neue EXE. Die EXE selbst ist nie im Image.
