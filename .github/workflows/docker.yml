@@ -56,6 +56,7 @@ jobs:
           build-args: |
             UPSTREAM_TAG=${{ steps.upstream.outputs.UPSTREAM_TAG }}
             UPSTREAM_SHA256=${{ steps.upstream.outputs.UPSTREAM_SHA256 }}
+            UPSTREAM_EXE=${{ steps.upstream.outputs.UPSTREAM_EXE }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha

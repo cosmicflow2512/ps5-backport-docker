@@ -25,18 +25,23 @@ fi
 
 [ -f "$SUMS" ] || { echo "FEHLER: keine SHA256SUMS.txt vorhanden"; exit 1; }
 
-WANT=$(grep -i 'PS5BackportGUI.exe' "$SUMS" | head -n1 | awk '{print tolower($1)}')
+# EXE-Name aus SHA256SUMS.txt: seit 0.3.3 versioniert (PS5BackportGUI-0.3.3.exe), vorher PS5BackportGUI.exe.
+# Lokal wird sie immer als PS5BackportGUI.exe abgelegt, damit Einstellungen/Ledger im selben Ordner bleiben.
+LINE=$(grep -iE '^[0-9a-fA-F]{64}[[:space:]]+\*?PS5BackportGUI[^[:space:]/]*\.exe[[:space:]]*$' "$SUMS" | head -n1)
+WANT=$(echo "$LINE" | awk '{print tolower($1)}')
+NAME=$(echo "$LINE" | awk '{print $2}' | sed 's/^\*//')
 case "$WANT" in
   [0-9a-f][0-9a-f][0-9a-f][0-9a-f]*) ;;
-  *) echo "FEHLER: kein gueltiger Hash fuer PS5BackportGUI.exe in SHA256SUMS.txt:"; cat "$SUMS"; exit 1 ;;
+  *) echo "FEHLER: keine PS5BackportGUI*.exe mit gueltigem Hash in SHA256SUMS.txt ($TAG):"; cat "$SUMS"; exit 1 ;;
 esac
+echo "Release $TAG: $NAME $WANT"
 
 HAVE=""
 [ -f "$EXE" ] && HAVE=$(sha256sum "$EXE" | awk '{print $1}')
 
 if [ "$HAVE" != "$WANT" ]; then
-  echo "Lade PS5BackportGUI.exe ($BASE) ..."
-  curl -fL "$BASE/PS5BackportGUI.exe" -o "$EXE.new" || { echo "FEHLER: Download fehlgeschlagen"; rm -f "$EXE.new"; exit 1; }
+  echo "Lade $NAME ($BASE) ..."
+  curl -fL "$BASE/$NAME" -o "$EXE.new" || { echo "FEHLER: Download fehlgeschlagen"; rm -f "$EXE.new"; exit 1; }
   GOT=$(sha256sum "$EXE.new" | awk '{print $1}')
   if [ "$GOT" != "$WANT" ]; then
     echo "FEHLER: Hash-Mismatch ($GOT != $WANT)"
@@ -44,7 +49,7 @@ if [ "$HAVE" != "$WANT" ]; then
     exit 1
   fi
   mv "$EXE.new" "$EXE"
-  echo "PS5BackportGUI.exe verifiziert: $WANT"
+  echo "$NAME verifiziert: $WANT (gespeichert als PS5BackportGUI.exe)"
 fi
 
 cd "$APPDIR" || exit 1
