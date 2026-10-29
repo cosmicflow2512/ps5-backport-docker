@@ -37,11 +37,12 @@ jobs:
         run: |
           set -euo pipefail
           REPO=kerrdec97/PS5-Backport-GUI
+          # neueste zuerst nach Veroeffentlichung; die API-Reihenfolge folgt nicht zuverlaessig dem Datum
           gh api "repos/$REPO/releases?per_page=30" \
-            --jq '.[] | select(.draft | not) | [.tag_name, ([.assets[].name] | join("|"))] | @tsv' > "$RUNNER_TEMP/releases.tsv"
+            --jq '[.[] | select(.draft | not)] | sort_by(.published_at // .created_at) | reverse | .[] | [.tag_name, ([.assets[].name] | join("|"))] | @tsv' > "$RUNNER_TEMP/releases.tsv"
           FOUND=""
           while IFS=$'\t' read -r TAG ASSETS; do
-            if ! printf '%s\n' "$TAG" | grep -Eq "$TAG_REGEX"; then echo "skip $TAG (Filter $TAG_REGEX)"; continue; fi
+            if ! printf '%s\n' "$TAG" | grep -Eq "$TAG_REGEX"; then echo "::notice::skip $TAG (Filter $TAG_REGEX)"; continue; fi
             case "|$ASSETS|" in *"|SHA256SUMS.txt|"*) ;; *) echo "::notice::skip $TAG (kein SHA256SUMS.txt)"; continue ;; esac
             rm -f "$RUNNER_TEMP/SHA256SUMS.txt"
             gh release download "$TAG" --repo "$REPO" --pattern SHA256SUMS.txt --dir "$RUNNER_TEMP" --clobber
