@@ -42,23 +42,23 @@ jobs:
           FOUND=""
           while IFS=$'\t' read -r TAG ASSETS; do
             if ! printf '%s\n' "$TAG" | grep -Eq "$TAG_REGEX"; then echo "skip $TAG (Filter $TAG_REGEX)"; continue; fi
-            case "|$ASSETS|" in *"|SHA256SUMS.txt|"*) ;; *) echo "skip $TAG (kein SHA256SUMS.txt)"; continue ;; esac
+            case "|$ASSETS|" in *"|SHA256SUMS.txt|"*) ;; *) echo "::notice::skip $TAG (kein SHA256SUMS.txt)"; continue ;; esac
             rm -f "$RUNNER_TEMP/SHA256SUMS.txt"
             gh release download "$TAG" --repo "$REPO" --pattern SHA256SUMS.txt --dir "$RUNNER_TEMP" --clobber
             # Seit 0.3.3 heisst die EXE versioniert (PS5BackportGUI-0.3.3.exe), vorher PS5BackportGUI.exe
             LINE=$(grep -iE '^[0-9a-fA-F]{64}[[:space:]]+\*?PS5BackportGUI[^[:space:]/]*\.exe[[:space:]]*$' "$RUNNER_TEMP/SHA256SUMS.txt" | head -n1 || true)
             SHA=$(printf '%s\n' "$LINE" | awk '{print tolower($1)}')
             EXE=$(printf '%s\n' "$LINE" | awk '{print $2}' | sed 's/^\*//')
-            if [ -z "$LINE" ]; then echo "skip $TAG (keine PS5BackportGUI*.exe in SHA256SUMS.txt)"; cat "$RUNNER_TEMP/SHA256SUMS.txt"; continue; fi
-            case "|$ASSETS|" in *"|$EXE|"*) ;; *) echo "skip $TAG ($EXE nicht als Asset vorhanden)"; continue ;; esac
+            if [ -z "$LINE" ]; then echo "::warning::skip $TAG (keine PS5BackportGUI*.exe in SHA256SUMS.txt): $(tr '\r\n' '  ' < "$RUNNER_TEMP/SHA256SUMS.txt" | od -c | head -c 600 | tr '\n' ' ')"; continue; fi
+            case "|$ASSETS|" in *"|$EXE|"*) ;; *) echo "::warning::skip $TAG ($EXE nicht als Asset vorhanden: $ASSETS)"; continue ;; esac
             FOUND=1
             break
           done < "$RUNNER_TEMP/releases.tsv"
-          [ -n "$FOUND" ] || { echo "Kein passendes Release gefunden"; cat "$RUNNER_TEMP/releases.tsv"; exit 1; }
+          [ -n "$FOUND" ] || { echo "::error::Kein passendes Release gefunden: $(cut -f1 "$RUNNER_TEMP/releases.tsv" | tr '\n' ' ')"; exit 1; }
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "sha=$SHA" >> "$GITHUB_OUTPUT"
           echo "exe=$EXE" >> "$GITHUB_OUTPUT"
-          echo "Upstream: $TAG $EXE $SHA"
+          echo "::notice::Upstream: $TAG $EXE $SHA"
 
       - id: cmp
         name: Compare with upstream.env
